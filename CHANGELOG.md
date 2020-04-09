@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2020-04-09
+### Added
+- Add `-d, --dependent` flag for sorting modules by their dependent modules
+- Add information about `-d, --dependent` flag to README.md
+- Add a section to README.md about installation from nixpkgs
+
+### Fixed
+- Fix the CI workflow about Docker builds
+
+## Changed
+- Update README.md about sorting/reversing GIFs
+- Improve the test cases of sort type flags
+
+## [1.0.1] - 2020-04-05
+### Added
+- Add Copr package instructions to README.md
+
+### Fixed
+- Fix the broken manpage link in README.md
+
 ## [1.0.0] - 2020-04-01
 ### Added
 - Add roadmap, ToC, funding information and new images to README.md
