@@ -54,9 +54,8 @@ impl Events {
 			let mut kernel_logs = kernel_logs.clone();
 			thread::spawn(move || loop {
 				if kernel_logs.update() {
-					match tx.send(Event::Kernel(kernel_logs.output.to_string())) {
-						_ => {}
-					}
+					tx.send(Event::Kernel(kernel_logs.output.to_string()))
+						.unwrap_or_default();
 				}
 				thread::sleep(refresh_rate * 10);
 			})
@@ -65,9 +64,8 @@ impl Events {
 		let tick_handler = {
 			let tx = tx.clone();
 			thread::spawn(move || loop {
-				match tx.send(Event::Tick) {
-					_ => thread::sleep(refresh_rate),
-				}
+				tx.send(Event::Tick).unwrap_or_default();
+				thread::sleep(refresh_rate);
 			})
 		};
 		/* Return events. */
@@ -84,8 +82,9 @@ impl Events {
 #[cfg(test)]
 mod tests {
 	use super::*;
+	use std::error::Error;
 	#[test]
-	fn test_events() -> Result<(), failure::Error> {
+	fn test_events() -> Result<(), Box<dyn Error>> {
 		let kernel_logs = KernelLogs::default();
 		let events = Events::new(100, &kernel_logs);
 		let mut i = 0;

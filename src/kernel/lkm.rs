@@ -47,7 +47,7 @@ impl ListArgs {
 	 * @param  ArgMatches
 	 * @return ListArgs
 	 */
-	pub fn new(args: &ArgMatches) -> Self {
+	pub fn new(args: &ArgMatches<'_>) -> Self {
 		let mut sort_type = SortType::None;
 		if let Some(matches) = args.subcommand_matches("sort") {
 			if matches.is_present("size") {
@@ -252,11 +252,14 @@ impl KernelModules<'_> {
 	 * @param mod_index
 	 */
 	pub fn show_used_module(&mut self, mod_index: usize) {
-		if let Some(used_module) =
-			self.list[self.index][2].split(' ').collect::<Vec<&str>>()[1]
-				.split(',')
-				.collect::<Vec<&str>>()
-				.get(mod_index)
+		if let Some(used_module) = self.list[self.index][2]
+			.split(' ')
+			.collect::<Vec<&str>>()
+			.get(1)
+			.unwrap_or(&"")
+			.split(',')
+			.collect::<Vec<&str>>()
+			.get(mod_index)
 		{
 			if let Some(v) = self
 				.list
@@ -308,7 +311,7 @@ impl KernelModules<'_> {
 				Box::leak(
 					util::exec_cmd("modinfo", &[&self.current_name])
 						.unwrap_or_else(|_| {
-							String::from("failed to retrieve module information")
+							String::from("module information not available")
 						})
 						.replace("signature: ", "signature: \n")
 						.into_boxed_str(),
@@ -376,10 +379,9 @@ impl KernelModules<'_> {
 #[cfg(test)]
 mod tests {
 	use super::*;
-	use clap::App;
 	#[test]
 	fn test_kernel_modules() {
-		let args = App::new("test").get_matches();
+		let args = ArgMatches::default();
 		let mut list_args = ListArgs::new(&args);
 		list_args.sort = SortType::Size;
 		list_args.reverse = true;

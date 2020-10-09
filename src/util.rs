@@ -19,8 +19,11 @@ pub const KEY_BINDINGS: &[(&str, &str)] = &[
 	("</>", "scroll up/down [module information]"),
 	("alt-h/l", "scroll right/left [kernel activities]"),
 	("ctrl-t/b, home/end", "scroll to top/bottom [module list]"),
+	("alt-e/s", "expand/shrink the selected block"),
+	("ctrl-x", "change the block position"),
 	("ctrl-l/u, alt-c", "clear the kernel ring buffer"),
-	("1..9", "show the module dependency information"),
+	("d, alt-d", "show the dependent modules"),
+	("1..9", "jump to the dependent module"),
 	("\\, tab, backtab", "show the next kernel information"),
 	("/, s, enter", "search a kernel module"),
 	("+, i, insert", "load a kernel module"),
@@ -59,6 +62,15 @@ pub fn parse_args() -> clap::ArgMatches<'static> {
 		))
 		.usage("kmon [FLAGS] [OPTIONS] [SUBCOMMANDS]")
 		.before_help(ASCII_LOGO)
+		.arg(
+			Arg::with_name("accent-color")
+				.short("a")
+				.long("accent-color")
+				.value_name("COLOR")
+				.default_value("white")
+				.help("Set the accent color using hex or color name")
+				.takes_value(true),
+		)
 		.arg(
 			Arg::with_name("color")
 				.short("c")
@@ -143,12 +155,6 @@ pub fn exec_cmd(cmd: &str, cmd_args: &[&str]) -> Result<String, String> {
 #[cfg(test)]
 mod tests {
 	use super::*;
-	#[test]
-	fn test_parse_args() {
-		let matches = parse_args();
-		assert_ne!(0, matches.args.len());
-		assert_eq!(true, matches.usage.unwrap().lines().count() > 1);
-	}
 	#[test]
 	fn test_exec_cmd() {
 		assert_eq!("test", exec_cmd("printf", &["test"]).unwrap());
